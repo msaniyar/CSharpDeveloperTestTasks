@@ -14,6 +14,7 @@ namespace Core.Services
     {
 
 
+        /// <inheritdoc />
         public string CalculateFileHash(string filePath)
         {
             if(!File.Exists(filePath))

@@ -6,6 +6,11 @@ namespace Core.Interfaces
 {
     public interface INumberProcessorService
     {
-       Task<QueueServiceResponseModel> SendNumbers(int numbers);
+        /// <summary>
+        /// Takes the numbers and sends them to processor asynchronously.
+        /// </summary>
+        /// <param name="numbers"></param>
+        /// <returns></returns>
+        Task<QueueServiceResponseModel> SendNumbers(int numbers);
     }
 }

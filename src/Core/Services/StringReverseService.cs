@@ -10,11 +10,7 @@ namespace Core.Services
     public class StringReverseService : IStringReverseService
     {
 
-        /// <summary>
-        /// Reversing incoming string and returns.
-        /// </summary>
-        /// <param name="initialString"></param>
-        /// <returns></returns>
+        /// <inheritdoc />
         public string ReverseString(string initialString)
         {
             var charArray = initialString.ToCharArray();

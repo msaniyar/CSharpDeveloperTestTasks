@@ -19,6 +19,7 @@ namespace Core.Services
             _client = client;
         }
 
+        /// <inheritdoc />
         public async Task<Prices> GetPrices()
         {
             Prices prices = new()

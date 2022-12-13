@@ -11,8 +11,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 var url = builder.Configuration["ServerHubUrl"];
 
-builder.Services.AddScoped<IGraphQLClient>(s => new GraphQLHttpClient(builder.Configuration["GraphQLUrl"], new NewtonsoftJsonSerializer()));
-
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
 
 builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder =>
@@ -22,6 +20,7 @@ builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder =>
 
 
 // Add services to the container.
+builder.Services.AddScoped<IGraphQLClient>(s => new GraphQLHttpClient(builder.Configuration["GraphQLUrl"], new NewtonsoftJsonSerializer()));
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

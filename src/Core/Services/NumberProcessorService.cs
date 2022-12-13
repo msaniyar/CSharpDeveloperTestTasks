@@ -30,12 +30,7 @@ namespace Core.Services
         }
 
 
-        /// <summary>
-        /// Takes the numbers and sends them to processor asynchronously.
-        /// </summary>
-        /// <param name="numbers"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
+        /// <inheritdoc />
         public async Task<QueueServiceResponseModel> SendNumbers(int numbers)
         {
             if(numbers is <=0 or > 1000)
