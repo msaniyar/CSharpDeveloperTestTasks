@@ -22,6 +22,10 @@ namespace Core
             builder.RegisterType<StringReverseService>()
                 .As<IStringReverseService>()
                 .InstancePerLifetimeScope();
+
+            builder.RegisterType<FileHashService>()
+                .As<IFileHashService>()
+                .InstancePerLifetimeScope();
         }
     }
 }

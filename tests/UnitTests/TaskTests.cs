@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.SignalR;
 using Moq;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.IO.Abstractions.TestingHelpers;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,6 +19,7 @@ namespace UnitTests
 
         private readonly IStringReverseService _stringReverseService;
         private readonly INumberProcessorService _numberProcessorService;
+        private readonly IFileHashService _fileHashService;
 
         private const string InitialString = "";
         private const string ExpectedReverseString = "";
@@ -25,6 +28,7 @@ namespace UnitTests
         public TaskTests()
         {
             _stringReverseService = new StringReverseService();
+            _fileHashService = new FileHashService();
         }
 
         [Fact]
@@ -59,6 +63,23 @@ namespace UnitTests
                     default(CancellationToken)),
                 Times.Once);
 
+        }
+
+        [Fact]
+        public void FileHashTest()
+        {
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "testFile.bin");
+
+            using FileStream fs = File.Create(filePath);
+            fs.Dispose();
+
+            var calculatedHash = _fileHashService.CalculateFileHash(filePath);
+
+            Assert.Equal(
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", 
+                calculatedHash);
+
+            File.Delete(filePath);
         }
 
     }

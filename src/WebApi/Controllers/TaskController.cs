@@ -8,11 +8,15 @@ namespace WebApi.Controllers
     {
         private readonly IStringReverseService _stringReverseService;
         private readonly INumberProcessorService _numberProcessorService;
+        private readonly IFileHashService _fileHashService;
 
-        public TaskController(IStringReverseService stringReverseService, INumberProcessorService numberProcessorService)
+        public TaskController(IStringReverseService stringReverseService, 
+            INumberProcessorService numberProcessorService,
+            IFileHashService fileHashService)
         {
             _stringReverseService = stringReverseService;
             _numberProcessorService = numberProcessorService;
+            _fileHashService = fileHashService;
         }
 
 
@@ -29,6 +33,13 @@ namespace WebApi.Controllers
             var response = await _numberProcessorService.SendNumbers(numbers);
             return response.Success == true ? Ok(response) : BadRequest(response);
         }
-       
+
+        [HttpGet("FileHash")]
+        public IActionResult GetFileHash(string filePath)
+        {
+            var result = _fileHashService.CalculateFileHash(filePath);
+            return result == string.Empty ? BadRequest("File does not exist.") : Ok(result);
+        }
+
     }
 }
