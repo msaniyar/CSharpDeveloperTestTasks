@@ -26,6 +26,10 @@ namespace Core
             builder.RegisterType<FileHashService>()
                 .As<IFileHashService>()
                 .InstancePerLifetimeScope();
+
+            builder.RegisterType<PriceGetterService>()
+                .As<IPriceGetterService>()
+                .InstancePerLifetimeScope();
         }
     }
 }

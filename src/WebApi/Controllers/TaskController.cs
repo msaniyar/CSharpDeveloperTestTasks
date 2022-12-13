@@ -9,14 +9,17 @@ namespace WebApi.Controllers
         private readonly IStringReverseService _stringReverseService;
         private readonly INumberProcessorService _numberProcessorService;
         private readonly IFileHashService _fileHashService;
+        private readonly IPriceGetterService _priceGetterService;
 
         public TaskController(IStringReverseService stringReverseService, 
             INumberProcessorService numberProcessorService,
-            IFileHashService fileHashService)
+            IFileHashService fileHashService,
+            IPriceGetterService priceGetterService)
         {
             _stringReverseService = stringReverseService;
             _numberProcessorService = numberProcessorService;
             _fileHashService = fileHashService;
+            _priceGetterService = priceGetterService;
         }
 
 
@@ -38,7 +41,15 @@ namespace WebApi.Controllers
         public IActionResult GetFileHash(string filePath)
         {
             var result = _fileHashService.CalculateFileHash(filePath);
-            return result == string.Empty ? BadRequest("File does not exist.") : Ok(result);
+            return result == string.Empty ? NotFound("File does not exist.") : Ok(result);
+        }
+
+
+        [HttpGet("GetPrices")]
+        public async Task<IActionResult> GetPrices()
+        {
+            var response = await _priceGetterService.GetPrices();
+            return response != null ? Ok(response) : NotFound("Prices cannot be fetched from external API.");
         }
 
     }

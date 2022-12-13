@@ -1,12 +1,17 @@
 using Autofac;
+using Autofac.Core;
 using Autofac.Extensions.DependencyInjection;
 using Core;
 using Core.Hubs;
+using GraphQL.Client.Abstractions;
+using GraphQL.Client.Http;
+using GraphQL.Client.Serializer.Newtonsoft;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var url = builder.Configuration.GetSection("ServerHubUrl").Value;
+var url = builder.Configuration["ServerHubUrl"];
 
+builder.Services.AddScoped<IGraphQLClient>(s => new GraphQLHttpClient(builder.Configuration["GraphQLUrl"], new NewtonsoftJsonSerializer()));
 
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
 
@@ -14,6 +19,7 @@ builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder =>
 {
     containerBuilder.RegisterModule(new CoreModule(url));
 });
+
 
 // Add services to the container.
 
