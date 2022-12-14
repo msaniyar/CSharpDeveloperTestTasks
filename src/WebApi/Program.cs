@@ -6,21 +6,24 @@ using Core.Hubs;
 using GraphQL.Client.Abstractions;
 using GraphQL.Client.Http;
 using GraphQL.Client.Serializer.Newtonsoft;
+using Microsoft.AspNetCore.SignalR.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var url = builder.Configuration["ServerHubUrl"];
+var hubUrl = builder.Configuration["ServerHubUrl"];
+var graphQLUrl = builder.Configuration["GraphQLUrl"];
 
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
 
 builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder =>
 {
-    containerBuilder.RegisterModule(new CoreModule(url));
+    containerBuilder.RegisterModule(new CoreModule());
 });
 
 
 // Add services to the container.
-builder.Services.AddScoped<IGraphQLClient>(s => new GraphQLHttpClient(builder.Configuration["GraphQLUrl"], new NewtonsoftJsonSerializer()));
+builder.Services.AddScoped<IGraphQLClient>(s => new GraphQLHttpClient(graphQLUrl, new NewtonsoftJsonSerializer()));
+builder.Services.AddScoped<IHubConnectionBuilder>(s => new HubConnectionBuilder().WithUrl(hubUrl).WithAutomaticReconnect());
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

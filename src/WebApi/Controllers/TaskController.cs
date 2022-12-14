@@ -1,6 +1,7 @@
 ﻿using Core.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using WebApi.Models;
 
 namespace WebApi.Controllers
 {
@@ -31,9 +32,9 @@ namespace WebApi.Controllers
         }
 
         [HttpPost("ProcessNumbers")]
-        public async Task<IActionResult> ProcessNumbers(int numbers)
+        public async Task<IActionResult> ProcessNumbers([FromBody] NumberProcessorRequestModel numbers)
         {
-            var response = await _numberProcessorService.SendNumbers(numbers);
+            var response = await _numberProcessorService.SendNumbers(numbers.Number);
             return response.Success == true ? Ok(response) : BadRequest(response);
         }
 

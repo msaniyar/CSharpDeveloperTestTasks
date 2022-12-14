@@ -6,15 +6,6 @@ using GraphQL;
 using GraphQL.Client.Abstractions;
 using Microsoft.AspNetCore.SignalR;
 using Moq;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.IO.Abstractions.TestingHelpers;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace UnitTests

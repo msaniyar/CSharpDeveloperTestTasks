@@ -13,19 +13,16 @@ namespace Core.Services
     public class NumberProcessorService : INumberProcessorService
     {
 
-        private readonly HubConnection? _connection;
+        private readonly IHubConnectionBuilder _hubConnectionBuilder;
         private readonly ILogger<NumberProcessorService> _logger;
         private readonly List<bool> _messages = new();
 
-        private const string MethodName = "NumberProcessed";
+        private const string ServerMethodName = "NumberProcessor";
+        private const string ClientMethodName = "NumberProcessed";
 
-        public NumberProcessorService(string url, ILogger<NumberProcessorService> logger)
+        public NumberProcessorService(IHubConnectionBuilder hubConnectionBuilder, ILogger<NumberProcessorService> logger)
         {
-            _connection = new HubConnectionBuilder()
-                .WithUrl(url)
-                .WithAutomaticReconnect()
-                .Build();
-            _connection.StartAsync();
+            _hubConnectionBuilder = hubConnectionBuilder;
             _logger = logger;
         }
 
@@ -33,9 +30,11 @@ namespace Core.Services
         /// <inheritdoc />
         public async Task<QueueServiceResponseModel> SendNumbers(int numbers)
         {
-            if(numbers is <=0 or > 1000)
+            var connection = _hubConnectionBuilder.Build();
+            connection?.StartAsync();
+            if (numbers is <=0 or > 1000)
             {
-                if (_connection != null) await _connection.DisposeAsync();
+                if (connection != null) await connection.DisposeAsync();
                 return new QueueServiceResponseModel
                 {
                     Message = "Number should be in the range of 0..1000",
@@ -43,7 +42,7 @@ namespace Core.Services
                 };
             }
 
-            _connection?.On<bool>(MethodName, async (response) =>
+            connection?.On<bool>(ClientMethodName, async (response) =>
             {
                 _messages.Add(response);
                 _logger.LogInformation($"Message is processing... Current Count: {_messages.Count}");
@@ -51,10 +50,10 @@ namespace Core.Services
                 _logger.LogInformation($"{numbers} messages are processed.");
                 _messages.Clear();
                 numbers = 0;
-                await _connection.DisposeAsync(); // When processing is done, dispose the connection.
+                await connection.DisposeAsync(); // When processing is done, dispose the connection.
             });
 
-            if(_connection is null)
+            if(connection is null)
             {
                 return new QueueServiceResponseModel
                 {
@@ -66,7 +65,7 @@ namespace Core.Services
             for (int value = 0; value < numbers; value++)
             {
                 // Send numbers to the processor.
-                await _connection.SendAsync("NumberProcessor", value);
+                await connection.SendAsync(ServerMethodName, value);
 
             }
 
