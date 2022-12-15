@@ -1,0 +1,15 @@
+version: "3.8"
+services:
+    webapi:
+           container_name: WebApi
+           image: webapi
+           build:
+             context: "./src"
+             network: host
+             dockerfile: "WebApi/Dockerfile"
+           restart: always
+           environment:
+               - ServerHubUrl=http://localhost:80/process
+               - GraphQLUrl=https://api.blocktap.io/graphql
+           ports:
+               - 5269:80
