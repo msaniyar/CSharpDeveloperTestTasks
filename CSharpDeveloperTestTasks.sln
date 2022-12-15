@@ -14,7 +14,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F1B8362F-6A26-4931-B459-F24026B65AA2}"
 	ProjectSection(SolutionItems) = preProject
 		docker-compose.yml = docker-compose.yml
+		README.md = README.md
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{6FD70761-8136-422B-99FF-C33A1910F6A0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -40,6 +43,7 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{C12BB912-DCE6-4B09-B517-47DA20175D7A} = {5B97184E-8692-4C1D-946A-E6218419B491}
+		{4465B7D7-1BB5-4B8A-8982-1660D7EC384E} = {6FD70761-8136-422B-99FF-C33A1910F6A0}
 		{F998878F-C403-44E6-8E74-09F8DC5CB262} = {5B97184E-8692-4C1D-946A-E6218419B491}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
