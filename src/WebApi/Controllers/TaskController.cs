@@ -23,7 +23,11 @@ namespace WebApi.Controllers
             _priceGetterService = priceGetterService;
         }
 
-
+        /// <summary>
+        /// Get Reversed string of input string.
+        /// </summary>
+        /// <param name="initialString"></param>
+        /// <returns></returns>
         [HttpGet("GetReversedString")]
         public IActionResult GetReversedString(string initialString)
         {
@@ -31,6 +35,11 @@ namespace WebApi.Controllers
             return result == string.Empty ? BadRequest("String length should be more than 1") : Ok(result);
         }
 
+        /// <summary>
+        /// Run given number of processes async.
+        /// </summary>
+        /// <param name="numbers"></param>
+        /// <returns></returns>
         [HttpPost("ProcessNumbers")]
         public async Task<IActionResult> ProcessNumbers([FromBody] NumberProcessorRequestModel numbers)
         {
@@ -38,6 +47,12 @@ namespace WebApi.Controllers
             return response.Success == true ? Ok(response) : BadRequest(response);
         }
 
+
+        /// <summary>
+        /// Get file hash of given file in hex format.
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
         [HttpGet("FileHash")]
         public IActionResult GetFileHash(string filePath)
         {
@@ -46,6 +61,10 @@ namespace WebApi.Controllers
         }
 
 
+        /// <summary>
+        /// Get current crypto prices of 100 assets.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("GetPrices")]
         public async Task<IActionResult> GetPrices()
         {

@@ -7,9 +7,10 @@ services:
              context: "./src"
              network: host
              dockerfile: "WebApi/Dockerfile"
+
            restart: always
            environment:
                - ServerHubUrl=http://localhost:80/process
                - GraphQLUrl=https://api.blocktap.io/graphql
            ports:
-               - 5269:80
+               - 90:80
