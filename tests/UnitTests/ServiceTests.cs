@@ -23,8 +23,8 @@ namespace UnitTests
         private Mock<ILogger<NumberProcessorService>> _mockLogger;
 
 
-        private const string InitialString = "";
-        private const string ExpectedReverseString = "";
+        private const string InitialString = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor";
+        private const string ExpectedReverseString = "ropmet domsuie od des ,tile gnicsipida rutetcesnoc ,tema tis rolod muspi meroL";
 
 
         public ServiceTests()
