@@ -1,6 +1,4 @@
-﻿using System;
-
-using Core.Models;
+﻿using Core.Models;
 
 namespace Core.Interfaces
 {

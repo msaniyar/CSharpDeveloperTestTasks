@@ -1,5 +1,5 @@
 ﻿using Core.Interfaces;
-using Microsoft.AspNetCore.Http;
+using Core.Models;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Models;
 
@@ -43,6 +43,16 @@ namespace WebApi.Controllers
         [HttpPost("ProcessNumbers")]
         public async Task<IActionResult> ProcessNumbers([FromBody] NumberProcessorRequestModel numbers)
         {
+            if(numbers == null)
+            {
+                var nullResponse =  new QueueServiceResponseModel
+                {
+                    Message = "Input parameter is not correct.",
+                    Success = false
+                };
+
+                return BadRequest(nullResponse);
+            }
             var response = await _numberProcessorService.SendNumbers(numbers.Number);
             return response.Success == true ? Ok(response) : BadRequest(response);
         }

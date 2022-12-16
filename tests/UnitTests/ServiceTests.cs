@@ -5,10 +5,14 @@ using Core.Services;
 using FluentAssertions;
 using GraphQL;
 using GraphQL.Client.Abstractions;
+using Microsoft.AspNetCore.Connections;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.AspNetCore.SignalR.Protocol;
 using Microsoft.Extensions.Logging;
 using Moq;
+using System.Net;
+using UnitTests.Helpers;
 using Xunit;
 
 namespace UnitTests
@@ -43,6 +47,15 @@ namespace UnitTests
         {
             var reversedString = _stringReverseService.ReverseString(InitialString);
             Assert.Equal(ExpectedReverseString, reversedString);
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        public void NullorEmptyReverseStringTest(string initialString)
+        {
+            var reversedString = _stringReverseService.ReverseString(initialString);
+            Assert.Equal("", reversedString);
         }
 
         [Fact]
@@ -173,8 +186,10 @@ namespace UnitTests
 
         }
 
-        [Fact]
-        public async Task NumberProcessorOverAndUnderLimitTest()
+        [Theory]
+        [InlineData(-1)]
+        [InlineData(1001)]
+        public async Task NumberProcessorOverAndUnderLimitTest(int numbers)
         {
 
             var failedResponse = new QueueServiceResponseModel
@@ -183,12 +198,48 @@ namespace UnitTests
                 Success = false
             };
 
-            var resultOver = await _numberProcessorService.SendNumbers(1001);
-            var resultUnder = await _numberProcessorService.SendNumbers(-1);
+            var resultBeyondLimit = await _numberProcessorService.SendNumbers(numbers);
 
-            resultOver.Should().BeEquivalentTo(failedResponse);
-            resultUnder.Should().BeEquivalentTo(failedResponse);
+            resultBeyondLimit.Should().BeEquivalentTo(failedResponse);
 
+        }
+
+        [Fact]
+        public async Task NumberProcessorTest()
+        {
+
+            // Arrange
+            const int numbers = 100;
+            const string serverMethodName = "NumberProcessor";
+
+            var successfulResponse = new QueueServiceResponseModel
+            {
+                Message = "Data is successfully taken, It is being processed",
+                Success = true
+            };
+
+            var mockConnectionFactory = new Mock<IConnectionFactory>();
+            var mockHubProtocol = new Mock<IHubProtocol>();
+            var mockEndPoint = new Mock<EndPoint>();
+            var mockServiceProvider = new Mock<IServiceProvider>();
+            var mockLoggerFactory = new Mock<ILoggerFactory>();
+            var mockConnection = new Mock<TestHubConnection>(
+                mockConnectionFactory.Object,
+                mockHubProtocol.Object,
+                mockEndPoint.Object,
+                mockServiceProvider.Object,
+                mockLoggerFactory.Object
+                );
+
+            _mockHubConnectionBuilder.Setup(h => h.Build()).Returns(mockConnection.Object);
+
+
+            // Act
+            var resultSuccess = await _numberProcessorService.SendNumbers(numbers);
+
+            // Assert
+            resultSuccess.Should().BeEquivalentTo(successfulResponse);
+            mockConnection.Verify(m => m.SendCoreAsync(serverMethodName, It.IsAny<object[]>(), CancellationToken.None), Times.Exactly(numbers));
 
         }
 

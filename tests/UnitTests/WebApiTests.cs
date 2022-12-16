@@ -1,14 +1,7 @@
 ﻿using Core.Interfaces;
 using Core.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WebApi.Controllers;
 using WebApi.Models;
 using Xunit;
@@ -51,10 +44,12 @@ namespace UnitTests
             Assert.Equal(reverseString, stringResponse);
         }
 
-        [Fact]
-        public void GetReversedNullStringTest()
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+
+        public void GetReversedNullStringTest(string initialString)
         {
-            var initialString = "";
             var reverseString = "";
 
             _stringReverseService.Setup(s => s.ReverseString(initialString)).Returns(reverseString);
@@ -79,10 +74,12 @@ namespace UnitTests
             Assert.Equal(message, stringResponse?.Message);
         }
 
-        [Fact]
-        public async Task ProcessNumbersTestOverLimit()
+        [Theory]
+        [InlineData(-1)]
+        [InlineData(1001)]
+        public async Task ProcessNumbersTestOverUnderLimit(int numbers)
         {
-            var numbers = 1005;
+
             var message = "Number should be in the range of 0..1000";
             _numberProcessorService.Setup(s => s.SendNumbers(numbers)).
                 ReturnsAsync(new QueueServiceResponseModel { Message = message, Success = false });
@@ -96,6 +93,7 @@ namespace UnitTests
             Assert.False(stringResponse?.Success);
             Assert.Equal(message, stringResponse?.Message);
         }
+
 
         [Fact]
         public void GetFileHashTest()
