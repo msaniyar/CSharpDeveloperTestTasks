@@ -2,9 +2,12 @@
 using Core.Interfaces;
 using Core.Models;
 using Core.Services;
+using FluentAssertions;
 using GraphQL;
 using GraphQL.Client.Abstractions;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
@@ -15,6 +18,10 @@ namespace UnitTests
 
         private readonly IStringReverseService _stringReverseService;
         private readonly IFileHashService _fileHashService;
+        private readonly INumberProcessorService _numberProcessorService;
+        private Mock<IHubConnectionBuilder> _mockHubConnectionBuilder;
+        private Mock<ILogger<NumberProcessorService>> _mockLogger;
+
 
         private const string InitialString = "";
         private const string ExpectedReverseString = "";
@@ -24,6 +31,11 @@ namespace UnitTests
         {
             _stringReverseService = new StringReverseService();
             _fileHashService = new FileHashService();
+
+            _mockHubConnectionBuilder = new Mock<IHubConnectionBuilder>();
+            _mockLogger = new Mock<ILogger<NumberProcessorService>>();
+
+            _numberProcessorService = new NumberProcessorService(_mockHubConnectionBuilder.Object, _mockLogger.Object);
         }
 
         [Fact]
@@ -76,6 +88,20 @@ namespace UnitTests
 
             File.Delete(filePath);
         }
+
+        [Fact]
+        public void FileNotFoundHashTest()
+        {
+            var filePath = "not/exist/file.txt";
+
+
+            var calculatedHash = _fileHashService.CalculateFileHash(filePath);
+
+            Assert.Equal(String.Empty, calculatedHash);
+
+        }
+
+
 
         [Fact]
         public void GetPricesTest()
@@ -143,6 +169,25 @@ namespace UnitTests
             graphQlClient.Verify(client => client.SendQueryAsync<PageAssets>(It.IsAny<GraphQLRequest>(), CancellationToken.None), Times.Once);
             graphQlClient.Verify(client => client.SendQueryAsync<Prices>(It.IsAny<GraphQLRequest>(), CancellationToken.None), Times.Exactly(5));
 
+
+
+        }
+
+        [Fact]
+        public async Task NumberProcessorOverAndUnderLimitTest()
+        {
+
+            var failedResponse = new QueueServiceResponseModel
+            {
+                Message = "Number should be in the range of 0..1000",
+                Success = false
+            };
+
+            var resultOver = await _numberProcessorService.SendNumbers(1001);
+            var resultUnder = await _numberProcessorService.SendNumbers(-1);
+
+            resultOver.Should().BeEquivalentTo(failedResponse);
+            resultUnder.Should().BeEquivalentTo(failedResponse);
 
 
         }

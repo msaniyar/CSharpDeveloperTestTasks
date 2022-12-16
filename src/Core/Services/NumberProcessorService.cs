@@ -30,17 +30,18 @@ namespace Core.Services
         /// <inheritdoc />
         public async Task<QueueServiceResponseModel> SendNumbers(int numbers)
         {
-            var connection = _hubConnectionBuilder.Build();
-            connection?.StartAsync();
+
             if (numbers is <=0 or > 1000)
             {
-                if (connection != null) await connection.DisposeAsync();
                 return new QueueServiceResponseModel
                 {
                     Message = "Number should be in the range of 0..1000",
                     Success = false
                 };
             }
+
+            var connection = _hubConnectionBuilder.Build();
+            connection?.StartAsync();
 
             connection?.On<bool>(ClientMethodName, async (response) =>
             {
